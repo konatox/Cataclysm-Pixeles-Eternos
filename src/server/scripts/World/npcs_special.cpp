@@ -1759,6 +1759,9 @@ struct npc_training_dummy : NullCreatureAI
             case SPELL_ARCANE_MISSILES: // Arcane Missiles - Mage
                 if (caster->GetTypeId() == TYPEID_PLAYER)
                     caster->ToPlayer()->KilledMonsterCredit(NPC_SPELL_PRACTICE_CREDIT);
+                //fix quests objective learn judgement. If the player uses it is because they already learned it
+                if (spell->Id == SPELL_JUDGEMENT)
+                    caster->ToPlayer()->KilledMonsterCredit(44420);
                 break;
             default:
                 break;
