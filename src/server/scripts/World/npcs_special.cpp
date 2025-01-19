@@ -1724,6 +1724,7 @@ enum TrainingDummy
     SPELL_PRIMAL_STRIKE                        = 73899,
     SPELL_IMMOLATE                             = 348,
     SPELL_ARCANE_MISSILES                      = 5143,
+    LEARN_JUDGEMENT_CREDIT                     = 44420,
 };
 
 struct npc_training_dummy : NullCreatureAI
@@ -1761,7 +1762,7 @@ struct npc_training_dummy : NullCreatureAI
                     caster->ToPlayer()->KilledMonsterCredit(NPC_SPELL_PRACTICE_CREDIT);
                 //fix quests objective learn judgement. If the player uses it is because they already learned it
                 if (spell->Id == SPELL_JUDGEMENT)
-                    caster->ToPlayer()->KilledMonsterCredit(44420);
+                    caster->ToPlayer()->KilledMonsterCredit(LEARN_JUDGEMENT_CREDIT);
                 break;
             default:
                 break;
