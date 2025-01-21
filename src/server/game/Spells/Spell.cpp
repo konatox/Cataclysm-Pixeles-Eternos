@@ -63,6 +63,7 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 #include "QuestDef.h"
+#include "Chat.h"
 
 extern SpellEffectHandlerFn SpellEffectHandlers[TOTAL_SPELL_EFFECTS];
 
@@ -3549,10 +3550,10 @@ void Spell::_cast(bool skipCheck)
         if (m_spellInfo->Id == 71898) {
             if (playerCaster->GetQuestStatus(24861) == QUEST_STATUS_INCOMPLETE) {
                 playerCaster->KilledMonsterCredit(38438);
-                playerCaster->SendDirectMessage("Has completado la ofrenda.");
+                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Has completado la ofrenda.");
             } else {
                 // Si no hay criaturas cercanas, informa al jugador.
-                caster->SendDirectMessage("Debes estar cerca del lugar de la ofrenda.");
+                ChatHandler(casplayerCasterter->GetSession()).PSendSysMessage("Debes estar cerca del lugar de la ofrenda.");
             }
         }
 
