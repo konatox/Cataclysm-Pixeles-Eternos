@@ -3512,6 +3512,18 @@ void Spell::cancel()
 
 void Spell::cast(bool skipCheck)
 {
+    //validacion quest Last Rites, First Rites (quest 24861)
+    if (Player* playerCaster = GetCaster()->ToPlayer()) {
+        if (m_spellInfo->Id == 71898) {
+            if (playerCaster->GetQuestStatus(24861) == QUEST_STATUS_INCOMPLETE) {
+                playerCaster->KilledMonsterCredit(38438);
+                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Has completado la ofrenda.");
+            } else {
+                // Si no hay criaturas cercanas, informa al jugador.
+                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Debes estar cerca del lugar de la ofrenda.");
+            }
+        }
+    }
     Player* modOwner = m_caster->GetSpellModOwner();
     Spell* lastSpellMod = nullptr;
     if (modOwner)
@@ -3546,17 +3558,6 @@ void Spell::_cast(bool skipCheck)
 
     if (Player* playerCaster = m_caster->ToPlayer())
     {
-        //validacion quest Last Rites, First Rites (quest 24861)
-        if (m_spellInfo->Id == 71898) {
-            if (playerCaster->GetQuestStatus(24861) == QUEST_STATUS_INCOMPLETE) {
-                playerCaster->KilledMonsterCredit(38438);
-                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Has completado la ofrenda.");
-            } else {
-                // Si no hay criaturas cercanas, informa al jugador.
-                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Debes estar cerca del lugar de la ofrenda.");
-            }
-        }
-
         // now that we've done the basic check, now run the scripts
         // should be done before the spell is actually executed
         sScriptMgr->OnPlayerSpellCast(playerCaster, this, skipCheck);
