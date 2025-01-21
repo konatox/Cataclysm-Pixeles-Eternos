@@ -62,6 +62,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include "QuestDef.h"
 
 extern SpellEffectHandlerFn SpellEffectHandlers[TOTAL_SPELL_EFFECTS];
 
@@ -3544,6 +3545,17 @@ void Spell::_cast(bool skipCheck)
 
     if (Player* playerCaster = m_caster->ToPlayer())
     {
+        //validacion quest Last Rites, First Rites (quest 24861)
+        if (m_spellInfo->Id == 71898) {
+            if (playerCaster->GetQuestStatus(24861) == QUEST_STATUS_INCOMPLETE) {
+                playerCaster->KilledMonsterCredit(38438);
+                playerCaster->SendBroadcastMessage("Has completado la ofrenda.");
+            } else {
+                // Si no hay criaturas cercanas, informa al jugador.
+                caster->SendBroadcastMessage("Debes estar cerca del lugar de la ofrenda.");
+            }
+        }
+
         // now that we've done the basic check, now run the scripts
         // should be done before the spell is actually executed
         sScriptMgr->OnPlayerSpellCast(playerCaster, this, skipCheck);
