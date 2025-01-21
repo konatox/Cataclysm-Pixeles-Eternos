@@ -3518,9 +3518,12 @@ void Spell::cast(bool skipCheck)
             if (playerCaster->GetQuestStatus(24861) == QUEST_STATUS_INCOMPLETE) {
                 playerCaster->KilledMonsterCredit(38438);
                 ChatHandler(playerCaster->GetSession()).PSendSysMessage("Has completado la ofrenda.");
+                SendSpellGo();
+                return;
             } else {
                 // Si no hay criaturas cercanas, informa al jugador.
                 ChatHandler(playerCaster->GetSession()).PSendSysMessage("Debes estar cerca del lugar de la ofrenda.");
+                return; 
             }
         }
     }
