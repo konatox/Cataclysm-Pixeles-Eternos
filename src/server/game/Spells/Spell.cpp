@@ -3549,10 +3549,10 @@ void Spell::_cast(bool skipCheck)
         if (m_spellInfo->Id == 71898) {
             if (playerCaster->GetQuestStatus(24861) == QUEST_STATUS_INCOMPLETE) {
                 playerCaster->KilledMonsterCredit(38438);
-                playerCaster->SendBroadcastMessage("Has completado la ofrenda.");
+                playerCaster->SendDirectMessage("Has completado la ofrenda.");
             } else {
                 // Si no hay criaturas cercanas, informa al jugador.
-                caster->SendBroadcastMessage("Debes estar cerca del lugar de la ofrenda.");
+                caster->SendDirectMessage("Debes estar cerca del lugar de la ofrenda.");
             }
         }
 
