@@ -3553,7 +3553,7 @@ void Spell::_cast(bool skipCheck)
                 ChatHandler(playerCaster->GetSession()).PSendSysMessage("Has completado la ofrenda.");
             } else {
                 // Si no hay criaturas cercanas, informa al jugador.
-                ChatHandler(casplayerCasterter->GetSession()).PSendSysMessage("Debes estar cerca del lugar de la ofrenda.");
+                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Debes estar cerca del lugar de la ofrenda.");
             }
         }
 
