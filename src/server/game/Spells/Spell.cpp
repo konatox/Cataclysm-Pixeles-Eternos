@@ -3268,6 +3268,22 @@ bool Spell::UpdateChanneledTargetList()
 
 SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const* triggeredByAura)
 {
+    //validacion quest Last Rites, First Rites (quest 24861)
+    if (Player* playerCaster = GetCaster()->ToPlayer()) {
+        if (m_spellInfo->Id == 71898) {
+            if (playerCaster->GetQuestStatus(24861) == QUEST_STATUS_INCOMPLETE) {
+                playerCaster->KilledMonsterCredit(38438);
+                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Has completado la ofrenda.");
+                SendSpellGo();
+                return;
+            } else {
+                // Si no hay criaturas cercanas, informa al jugador.
+                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Debes estar cerca del lugar de la ofrenda.");
+                return; 
+            }
+        }
+    }
+    
     if (m_CastItem)
     {
         m_castItemGUID = m_CastItem->GetGUID();
@@ -3512,21 +3528,6 @@ void Spell::cancel()
 
 void Spell::cast(bool skipCheck)
 {
-    //validacion quest Last Rites, First Rites (quest 24861)
-    if (Player* playerCaster = GetCaster()->ToPlayer()) {
-        if (m_spellInfo->Id == 71898) {
-            if (playerCaster->GetQuestStatus(24861) == QUEST_STATUS_INCOMPLETE) {
-                playerCaster->KilledMonsterCredit(38438);
-                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Has completado la ofrenda.");
-                SendSpellGo();
-                return;
-            } else {
-                // Si no hay criaturas cercanas, informa al jugador.
-                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Debes estar cerca del lugar de la ofrenda.");
-                return; 
-            }
-        }
-    }
     Player* modOwner = m_caster->GetSpellModOwner();
     Spell* lastSpellMod = nullptr;
     if (modOwner)
