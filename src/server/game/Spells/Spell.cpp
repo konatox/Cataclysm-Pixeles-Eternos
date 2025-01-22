@@ -3275,15 +3275,15 @@ SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const
                 playerCaster->KilledMonsterCredit(38438);
                 ChatHandler(playerCaster->GetSession()).PSendSysMessage("Has completado la ofrenda.");
                 SendSpellGo();
-                return;
+                return SPELL_CAST_OK;
             } else {
                 // Si no hay criaturas cercanas, informa al jugador.
                 ChatHandler(playerCaster->GetSession()).PSendSysMessage("Debes estar cerca del lugar de la ofrenda.");
-                return; 
+                return SPELL_CAST_OK; 
             }
         }
     }
-    
+
     if (m_CastItem)
     {
         m_castItemGUID = m_CastItem->GetGUID();
