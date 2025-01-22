@@ -3266,24 +3266,34 @@ bool Spell::UpdateChanneledTargetList()
     return channelTargetEffectMask == 0;
 }
 
-SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const* triggeredByAura)
+bool Spell::validateQuestFixes()
 {
+
+    //Quest 24861 fix - variables
+    const uint32 QUEST_24861_ID = 24861;
+    const uint32 QUEST_24861_RELATED_SPELL_ID = 71898;
+    const uint32 QUEST_24861_RELATED_CREATURE_ID = 38438;
+    const float  QUEST_24861_RELATED_PROXIMITY_RADIUS = 5.0f;
+
     //Quest 24861 fix - Last Rites, First Rites
     if (Player* playerCaster = GetCaster()->ToPlayer()) {
-        if (m_spellInfo->Id == 71898 && playerCaster->GetQuestStatus(24861) == QUEST_STATUS_INCOMPLETE) {
+        if (m_spellInfo->Id == QUEST_24861_RELATED_SPELL_ID && playerCaster->GetQuestStatus(QUEST_24861_ID) == QUEST_STATUS_INCOMPLETE) {
             std::list<Creature*> creatures;
             playerCaster->GetCreatureListWithEntryInGrid(creatures, MULGORE_OFFERING_BUNNY_ID, 5.0f);
             if (!creatures.empty()) {
-                playerCaster->KilledMonsterCredit(38438);
-                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Has completado la ofrenda.");
+                playerCaster->KilledMonsterCredit(QUEST_24861_RELATED_CREATURE_ID);
                 SendSpellGo();
-                return SPELL_CAST_OK;
-            } else {
-                // Si no hay criaturas cercanas, informa al jugador.
-                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Debes estar cerca del lugar de la ofrenda.");
-                return SPELL_CAST_OK; 
+                return true;
             }
         }
+    }
+    return false;
+}
+
+SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const* triggeredByAura)
+{
+    if (validateQuestFixes()) {
+        return SPELL_CAST_OK;
     }
 
     if (m_CastItem)
