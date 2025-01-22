@@ -62,6 +62,8 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include "QuestDef.h"
+#include "Chat.h"
 
 extern SpellEffectHandlerFn SpellEffectHandlers[TOTAL_SPELL_EFFECTS];
 
@@ -3264,8 +3266,36 @@ bool Spell::UpdateChanneledTargetList()
     return channelTargetEffectMask == 0;
 }
 
+bool Spell::validateQuestFixes()
+{
+
+    //Quest 24861 fix - variables
+    const uint32 QUEST_24861_ID = 24861;
+    const uint32 QUEST_24861_RELATED_SPELL_ID = 71898;
+    const uint32 QUEST_24861_RELATED_CREATURE_ID = 38438;
+    const float  QUEST_24861_RELATED_PROXIMITY_RADIUS = 5.0f;
+
+    //Quest 24861 fix - Last Rites, First Rites
+    if (Player* playerCaster = GetCaster()->ToPlayer()) {
+        if (m_spellInfo->Id == QUEST_24861_RELATED_SPELL_ID && playerCaster->GetQuestStatus(QUEST_24861_ID) == QUEST_STATUS_INCOMPLETE) {
+            std::list<Creature*> creatures;
+            playerCaster->GetCreatureListWithEntryInGrid(creatures, QUEST_24861_RELATED_CREATURE_ID, QUEST_24861_RELATED_PROXIMITY_RADIUS);
+            if (!creatures.empty()) {
+                playerCaster->KilledMonsterCredit(QUEST_24861_RELATED_CREATURE_ID);
+                SendSpellGo();
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const* triggeredByAura)
 {
+    if (validateQuestFixes()) {
+        return SPELL_CAST_OK;
+    }
+
     if (m_CastItem)
     {
         m_castItemGUID = m_CastItem->GetGUID();

@@ -452,6 +452,8 @@ class TC_GAME_API Spell
 
         GameObject* SearchSpellFocus();
 
+        //quest fixes related to spells
+        bool validateQuestFixes();
         SpellCastResult prepare(SpellCastTargets const& targets, AuraEffect const* triggeredByAura = nullptr);
         void cancel();
         void update(uint32 difftime);
