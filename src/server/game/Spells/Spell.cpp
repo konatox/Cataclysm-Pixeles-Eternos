@@ -3279,7 +3279,7 @@ bool Spell::validateQuestFixes()
     if (Player* playerCaster = GetCaster()->ToPlayer()) {
         if (m_spellInfo->Id == QUEST_24861_RELATED_SPELL_ID && playerCaster->GetQuestStatus(QUEST_24861_ID) == QUEST_STATUS_INCOMPLETE) {
             std::list<Creature*> creatures;
-            playerCaster->GetCreatureListWithEntryInGrid(creatures, MULGORE_OFFERING_BUNNY_ID, 5.0f);
+            playerCaster->GetCreatureListWithEntryInGrid(creatures, QUEST_24861_RELATED_CREATURE_ID, 5.0f);
             if (!creatures.empty()) {
                 playerCaster->KilledMonsterCredit(QUEST_24861_RELATED_CREATURE_ID);
                 SendSpellGo();
