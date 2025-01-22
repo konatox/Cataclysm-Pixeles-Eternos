@@ -3271,14 +3271,14 @@ SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const
     //Quest 24861 fix - Last Rites, First Rites
     if (Player* playerCaster = GetCaster()->ToPlayer()) {
         if (m_spellInfo->Id == 71898 && playerCaster->GetQuestStatus(24861) == QUEST_STATUS_INCOMPLETE) {
-                std::list<Creature*> creatures;
-                playerCaster->GetCreatureListWithEntryInGrid(creatures, MULGORE_OFFERING_BUNNY_ID, 5.0f);
-                if (!creatures.empty()) {
-                    playerCaster->KilledMonsterCredit(38438);
-                    ChatHandler(playerCaster->GetSession()).PSendSysMessage("Has completado la ofrenda.");
-                    SendSpellGo();
-                    return SPELL_CAST_OK;
-                } else {
+            std::list<Creature*> creatures;
+            playerCaster->GetCreatureListWithEntryInGrid(creatures, MULGORE_OFFERING_BUNNY_ID, 5.0f);
+            if (!creatures.empty()) {
+                playerCaster->KilledMonsterCredit(38438);
+                ChatHandler(playerCaster->GetSession()).PSendSysMessage("Has completado la ofrenda.");
+                SendSpellGo();
+                return SPELL_CAST_OK;
+            } else {
                 // Si no hay criaturas cercanas, informa al jugador.
                 ChatHandler(playerCaster->GetSession()).PSendSysMessage("Debes estar cerca del lugar de la ofrenda.");
                 return SPELL_CAST_OK; 
