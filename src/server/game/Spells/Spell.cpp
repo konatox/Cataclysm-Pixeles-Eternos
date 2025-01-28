@@ -3275,8 +3275,14 @@ bool Spell::validateQuestFixes()
     const uint32 QUEST_24861_RELATED_CREATURE_ID = 38438;
     const float  QUEST_24861_RELATED_PROXIMITY_RADIUS = 5.0f;
 
-    //Quest 24861 fix - Last Rites, First Rites
+    //Quest 26200 fix - variables
+    const uint32 QUEST_26200_ID = 26200;
+    const uint32 QUEST_26200_RELATED_SPELL_ID = 2061; //flash heal
+    const uint32 QUEST_26200_RELATED_CREATURE_ID = 42501;
+    const uint32 QUEST_26200_REQUIRED_CASTS = 5;
+    
     if (Player* playerCaster = GetCaster()->ToPlayer()) {
+        //Quest 24861 fix - Last Rites, First Rites
         if (m_spellInfo->Id == QUEST_24861_RELATED_SPELL_ID && playerCaster->GetQuestStatus(QUEST_24861_ID) == QUEST_STATUS_INCOMPLETE) {
             std::list<Creature*> creatures;
             playerCaster->GetCreatureListWithEntryInGrid(creatures, QUEST_24861_RELATED_CREATURE_ID, QUEST_24861_RELATED_PROXIMITY_RADIUS);
@@ -3284,6 +3290,20 @@ bool Spell::validateQuestFixes()
                 playerCaster->KilledMonsterCredit(QUEST_24861_RELATED_CREATURE_ID);
                 SendSpellGo();
                 return true;
+            }
+        //Quest 26200 fix - The arts of a priest
+        } else if (m_spellInfo->Id == QUEST_26200_RELATED_SPELL_ID && playerCaster->GetQuestStatus(QUEST_26200_ID) == QUEST_STATUS_INCOMPLETE) {
+            if (Unit* target = GetExplTargetUnit()) {
+                if (target->GetEntry() == QUEST_26200_RELATED_CREATURE_ID) {
+                    // Incrementar el contador de hechizos lanzados correctamente
+                    playerCaster->CastSpell(target, QUEST_26200_RELATED_SPELL_ID, true);
+                    playerCaster->KilledMonsterCredit(QUEST_26200_RELATED_CREATURE_ID);
+                    // Verificar si se han lanzado los hechizos requeridos
+                    if (playerCaster->GetQuestObjectiveCounter(QUEST_26200_ID) >= QUEST_26200_REQUIRED_CASTS) {
+                        playerCaster->CompleteQuest(QUEST_26200_ID);
+                    }
+                    return true;
+                }
             }
         }
     }
