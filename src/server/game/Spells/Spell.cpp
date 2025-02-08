@@ -3293,8 +3293,11 @@ bool Spell::validateQuestFixes()
             }
         //Quest 26200 fix - The arts of a priest
         } else if (m_spellInfo->Id == QUEST_26200_RELATED_SPELL_ID && playerCaster->GetQuestStatus(QUEST_26200_ID) == QUEST_STATUS_INCOMPLETE) {
+            TC_LOG_INFO("misc", "validateQuestFixes: Quest 26200 fix 1");
             if (Unit* target = m_targets.GetUnitTarget()) {
+                TC_LOG_INFO("misc", "validateQuestFixes: Quest 26200 fix 2");
                 if (target->GetEntry() == QUEST_26200_RELATED_CREATURE_ID) {
+                    TC_LOG_INFO("misc", "validateQuestFixes: Quest 26200 fix 3");
                     // Incrementar el contador de hechizos lanzados correctamente
                     playerCaster->CastSpell(target, QUEST_26200_RELATED_SPELL_ID, true);
                     playerCaster->KilledMonsterCredit(QUEST_26200_RELATED_CREATURE_ID);
@@ -3315,6 +3318,7 @@ bool Spell::validateQuestFixes()
 
                     // Verificar si se han lanzado los hechizos requeridos
                     if (currentCount >= QUEST_26200_REQUIRED_CASTS) {
+                        TC_LOG_INFO("misc", "validateQuestFixes: Quest 26200 fix 4");
                         playerCaster->CompleteQuest(QUEST_26200_ID);
                     }
                     return true;
