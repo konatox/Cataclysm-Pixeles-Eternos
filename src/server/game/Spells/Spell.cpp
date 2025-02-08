@@ -3275,8 +3275,8 @@ bool Spell::validateQuestFixes()
     const uint32 QUEST_24861_RELATED_CREATURE_ID = 38438;
     const float  QUEST_24861_RELATED_PROXIMITY_RADIUS = 5.0f;
 
-    //Quest 24861 fix - Last Rites, First Rites
     if (Player* playerCaster = GetCaster()->ToPlayer()) {
+        //Quest 24861 fix - Last Rites, First Rites
         if (m_spellInfo->Id == QUEST_24861_RELATED_SPELL_ID && playerCaster->GetQuestStatus(QUEST_24861_ID) == QUEST_STATUS_INCOMPLETE) {
             std::list<Creature*> creatures;
             playerCaster->GetCreatureListWithEntryInGrid(creatures, QUEST_24861_RELATED_CREATURE_ID, QUEST_24861_RELATED_PROXIMITY_RADIUS);
@@ -3286,8 +3286,50 @@ bool Spell::validateQuestFixes()
                 return true;
             }
         }
+        
     }
     return false;
+}
+
+void Spell::validateQuestAfterSpell() {
+    //Quest 26200 fix - variables
+    const uint32 QUEST_26200_ID = 26200;
+    const uint32 QUEST_26200_RELATED_SPELL_ID = 2061; //flash heal
+    const uint32 QUEST_26200_RELATED_CREATURE_ID = 42501;
+    const uint32 QUEST_26200_REQUIRED_CASTS = 5;
+    
+    //Quest 26200 fix - The arts of a priest
+    if (Player* playerCaster = GetCaster()->ToPlayer()) {
+        if (m_spellInfo->Id == QUEST_26200_RELATED_SPELL_ID && playerCaster->GetQuestStatus(QUEST_26200_ID) == QUEST_STATUS_INCOMPLETE) {
+            TC_LOG_INFO("misc", "validateQuestFixes: Quest 26200 fix 1");
+            if (Unit* target = m_targets.GetUnitTarget()) {
+                TC_LOG_INFO("misc", "validateQuestFixes: Quest 26200 fix 2");
+                if (target->GetEntry() == QUEST_26200_RELATED_CREATURE_ID) {
+                    TC_LOG_INFO("misc", "validateQuestFixes: Quest 26200 fix 3");
+                    // Incrementar el contador de hechizos lanzados correctamente
+                    playerCaster->KilledMonsterCredit(QUEST_26200_RELATED_CREATURE_ID);
+                    // Verificar si se han lanzado los hechizos requeridos
+                    int32 questSlot = playerCaster->FindQuestSlot(QUEST_26200_ID);
+                    if (questSlot == -1) {
+                        TC_LOG_ERROR("misc", "validateQuestFixes: Quest slot not found for quest %u", QUEST_26200_ID);
+                    } else {
+                        // Obtener el contador actual de hechizos lanzados correctamente
+                        uint16 currentCount = playerCaster->GetQuestSlotCounter(questSlot, 0);
+                        currentCount++;
+
+                        // Actualizar el contador de hechizos lanzados correctamente
+                        playerCaster->SetQuestSlotCounter(questSlot, 0, currentCount);
+
+                        // Verificar si se han lanzado los hechizos requeridos
+                        if (currentCount >= QUEST_26200_REQUIRED_CASTS) {
+                            TC_LOG_INFO("misc", "validateQuestFixes: Quest 26200 fix 4");
+                            playerCaster->CompleteQuest(QUEST_26200_ID);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const* triggeredByAura)
@@ -3483,6 +3525,8 @@ SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const
         if (!m_casttime && /*!m_spellInfo->StartRecoveryTime && */ GetCurrentContainer() == CURRENT_GENERIC_SPELL)
             cast(true);
     }
+
+    validateQuestAfterSpell();
 
     return SPELL_CAST_OK;
 }
