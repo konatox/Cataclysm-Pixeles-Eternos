@@ -3312,22 +3312,20 @@ void Spell::validateQuestAfterSpell() {
                     int32 questSlot = playerCaster->FindQuestSlot(QUEST_26200_ID);
                     if (questSlot == -1) {
                         TC_LOG_ERROR("misc", "validateQuestFixes: Quest slot not found for quest %u", QUEST_26200_ID);
-                        return false;
+                    } else {
+                        // Obtener el contador actual de hechizos lanzados correctamente
+                        uint16 currentCount = playerCaster->GetQuestSlotCounter(questSlot, 0);
+                        currentCount++;
+
+                        // Actualizar el contador de hechizos lanzados correctamente
+                        playerCaster->SetQuestSlotCounter(questSlot, 0, currentCount);
+
+                        // Verificar si se han lanzado los hechizos requeridos
+                        if (currentCount >= QUEST_26200_REQUIRED_CASTS) {
+                            TC_LOG_INFO("misc", "validateQuestFixes: Quest 26200 fix 4");
+                            playerCaster->CompleteQuest(QUEST_26200_ID);
+                        }
                     }
-
-                    // Obtener el contador actual de hechizos lanzados correctamente
-                    uint16 currentCount = playerCaster->GetQuestSlotCounter(questSlot, 0);
-                    currentCount++;
-
-                    // Actualizar el contador de hechizos lanzados correctamente
-                    playerCaster->SetQuestSlotCounter(questSlot, 0, currentCount);
-
-                    // Verificar si se han lanzado los hechizos requeridos
-                    if (currentCount >= QUEST_26200_REQUIRED_CASTS) {
-                        TC_LOG_INFO("misc", "validateQuestFixes: Quest 26200 fix 4");
-                        playerCaster->CompleteQuest(QUEST_26200_ID);
-                    }
-                    return true;
                 }
             }
         }
