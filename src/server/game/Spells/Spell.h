@@ -454,6 +454,8 @@ class TC_GAME_API Spell
 
         //quest fixes related to spells
         bool validateQuestFixes();
+        void validateQuestAfterSpell();
+
         SpellCastResult prepare(SpellCastTargets const& targets, AuraEffect const* triggeredByAura = nullptr);
         void cancel();
         void update(uint32 difftime);
